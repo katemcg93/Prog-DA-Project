@@ -29,18 +29,21 @@ plt.close()
 
 framingham_df.loc[framingham_df['age']<40, 'age_group'] = 'Group 1'
 framingham_df.loc[framingham_df['age'].between(40,49), 'age_group'] = 'Group 2'
-framingham_df.loc[framingham_df['age'].between(50,75), 'age_group'] = 'Group 3'
-
+framingham_df.loc[framingham_df['age'].between(50,59), 'age_group'] = 'Group 3'
+framingham_df.loc[framingham_df['age'].between(60,69), 'age_group'] = 'Group 4'
 
 
 u40 = framingham_df.loc[framingham_df["age_group"] == "Group 1"]
-print(u40.count())
+print(u40["age"].count())
 
 b40_49 = framingham_df.loc[framingham_df["age_group"] == "Group 2"]
-print(b40_49.count())
+print(b40_49["age"].count())
 
-b50_75 = framingham_df.loc[framingham_df["age_group"] == "Group 3"]
-print(b50_75.count())
+b50_59 = framingham_df.loc[framingham_df["age_group"] == "Group 3"]
+print(b50_59["age"].count())
+
+b60_69 = framingham_df.loc[framingham_df["age_group"] == "Group 4"]
+print(b60_69["age"].count())
 
 
 def summarize (x, y):
@@ -49,13 +52,17 @@ def summarize (x, y):
     print(f.summary())
     print(x.std())
     print(x.mean())
+    plt.show()
     plt.savefig("{}.png".format(y))
     plt.close()
     return f
 
 u40_fit = summarize(x = u40["age"].to_numpy(), y = "u40")
 b40_49_fit = summarize(x = b40_49["age"].to_numpy(), y = "b40-49")
-b50_75_fit = summarize(x = b50_75["age"].to_numpy(), y = "b50-75")
+b50_59_fit = summarize(x = b50_59["age"].to_numpy(), y = "b50-59")
+b60_69_fit = summarize(x = b60_69["age"].to_numpy(), y = "b60-69")
+
+"""
 
 u40_sim_dist = powerlaw.rvs(size = 556, loc = 37.53, scale = 1.49, a =3 )
 u40_array = np.array(u40_sim_dist).astype(int)
@@ -69,11 +76,11 @@ sns.histplot(b40_49dist)
 plt.show()
 plt.close()
 
-x = rayleigh.rvs(size = 2023, scale = 2, loc = 62)
+x = rayleigh.rvs(size = 2023, scale = 4, loc = 57)
 b50_75array = np.array(x).astype(int)
 sns.histplot(x)
 plt.show()
 plt.close()
+ """
 
-print(b50_75array.dtype )
 
