@@ -14,12 +14,17 @@ from matplotlib.pyplot import hist
 np.random.seed (1245)
 rng = random.default_rng()
 
+#Part 1
+#Exploratory Analysis
+#Aim is to get demographic breakdown
+#Breakdown of variables - do they vary based on demographic data
+
 col_names = ()
 framingham_df = pd.read_csv( "Framingham Heart Study.csv", na_values=['(NA)']).fillna(0)
 print(framingham_df.columns)
 
 framingham_df[["age", "cigsPerDay", "totChol", "sysBP", "diaBP", "BMI", "heartRate", "glucose"]].apply(pd.to_numeric, errors='coerce')
-print(framingham_df.describe())
+
 
 age = framingham_df["age"].astype(int).to_numpy()
 
@@ -48,12 +53,12 @@ print(b60_69["age"].count())
 
 def summarize (x, y):
     f = Fitter(x,distributions = get_common_distributions(), bins = 10)
+    plt.savefig("{}.png".format(y))
     f.fit()
     print(f.summary())
     print(x.std())
     print(x.mean())
     plt.show()
-    plt.savefig("{}.png".format(y))
     plt.close()
     return f
 
