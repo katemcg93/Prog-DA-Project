@@ -6,6 +6,7 @@ import seaborn as sns
 import pandas as pd
 from scipy import stats
 from scipy.stats import skewnorm
+from scipy.stats import gamma
 
 np.random.seed(seed = 1234)
 
@@ -51,11 +52,10 @@ plt.close()
 quintiles = ["Very Disadvantaged", "Disadvantaged", "Average", "Affluent", "Very Affluent"]
 affluence_levels = np.random.choice(quintiles, 7500, p = [0.2, 0.2, 0.2, 0.2, 0.2])
 unique, counts = np.unique(affluence_levels, return_counts = True)
-print (np.asarray((unique, counts)).T)
 sns.barplot(x = unique, y = counts)
 plt.xticks(rotation = 45)
 plt.tight_layout()
-#plt.show()
+plt.show()
 plt.close()
 
 
@@ -94,11 +94,11 @@ bmi_dist_older_adults = skewnorm.rvs(a = 3, loc = 26, scale = 6, size = 7500)
 def bmi_assign (row):
 
     if row["Age"] <=24 :
-        return skewnorm.rvs(a = 2, loc = 20, scale = 3, size = 1)
+        return skewnorm.rvs(a = 2, loc = 20, scale = 5, size = 1)
     elif row["Age"] <= 74:
-        return skewnorm.rvs(a = 3, loc = 23.5, scale = 5, size = 1)
+        return skewnorm.rvs(a = 3, loc = 22.5, scale = 5, size = 1)
     else: 
-        return skewnorm.rvs(a = 3, loc = 26, scale = 6, size = 1)
+        return skewnorm.rvs(a = 3, loc = 26, scale = 5, size = 1)
 
 demographic_dataset["BMI"] = demographic_dataset.apply(bmi_assign, axis = 1)
 
@@ -123,3 +123,95 @@ demographic_dataset.to_csv("dataset.csv")
 
 sns.histplot(bmi_values)
 plt.show()
+plt.close()
+
+unique, counts = np.unique(bmi_classification, return_counts = True)
+sns.barplot(x = unique, y = counts)
+plt.xticks(rotation = 45)
+plt.tight_layout()
+plt.show()
+plt.close()
+
+meeting_ex_guidelines = ["Yes", "No"]
+
+def enough_exercise (row):
+    if row["Gender"] == 'Male':
+        if row["Age"] <= 24:
+            return np.random.choice(meeting_ex_guidelines, p = [0.71, 0.29])
+        elif row["Age"] >= 25 and row["Age"] <= 44:
+            return np.random.choice(meeting_ex_guidelines, p = [0.63, 0.37])
+        elif row["Age"] >= 45 and row["Age"] <= 54:
+            return np.random.choice(meeting_ex_guidelines, p = [0.53, 0.47])
+        elif row["Age"] >= 55 and row["Age"] <= 64:
+            return np.random.choice(meeting_ex_guidelines, p = [0.40, 0.60])
+        elif row["Age"] >= 65 and row["Age"] <= 74:
+            return np.random.choice(meeting_ex_guidelines, p = [0.41, 0.59])
+        elif row["Age"] >= 75:
+            return np.random.choice(meeting_ex_guidelines, p = [0.20, 0.80])
+
+    else:
+        if row["Age"] <= 24:
+            return np.random.choice(meeting_ex_guidelines, p = [0.51, 0.49])
+        elif row["Age"] >= 25 and row["Age"] <= 44:
+            return np.random.choice(meeting_ex_guidelines, p = [0.42, 0.58])
+        elif row["Age"] >= 45 and row["Age"] <= 54:
+            return np.random.choice(meeting_ex_guidelines, p = [0.40, 0.60])
+        elif row["Age"] >= 55 and row["Age"] <= 64:
+            return np.random.choice(meeting_ex_guidelines, p = [0.30, 0.70])
+        elif row["Age"] >= 65 and row["Age"] <= 74:
+            return np.random.choice(meeting_ex_guidelines, p = [0.26, 0.74])
+        elif row["Age"] >= 75:
+            return np.random.choice(meeting_ex_guidelines, p = [0.16, 0.84])
+
+demographic_dataset["Meeting Daily Exercise Guidelines"] = demographic_dataset.apply(enough_exercise, axis = 1)
+demographic_dataset.to_csv("dataset.csv")
+
+alcohol_choices = ["Drinks Alcohol", "Does Not Drink Alcohol"]
+
+def drinks_alcohol(row):
+    if row["Socioeconomic Status"] == "Very Disadvantaged":
+        return np.random.choice(alcohol_choices, p = [0.71, 0.29])
+    elif row["Socioeconomic Status"] == "Disadvantaged":
+        return np.random.choice(alcohol_choices, p = [0.72, 0.28])
+    elif row["Socioeconomic Status"] == "Average":
+        return np.random.choice(alcohol_choices, p = [0.76, 0.24])
+    elif row["Socioeconomic Status"] == "Affluent":
+        return np.random.choice(alcohol_choices, p = [0.79, 0.21])
+    else:
+        return np.random.choice(alcohol_choices, p = [0.83, 0.17])
+
+demographic_dataset["Drinks Alcohol"] = demographic_dataset.apply(drinks_alcohol, axis = 1)
+demographic_dataset.to_csv("dataset.csv")
+
+alcohol_consumption_men = np.random.gamma(shape = 0.98, scale = 38.57, size = 7500)
+sns.histplot(alcohol_consumption_men)
+
+alcohol_consumption_women = np.random.gamma(shape = 0.91, scale = 15.55, size = 7500)
+sns.histplot(alcohol_consumption_women)
+
+def alcohol_consumption(row):
+    if row["Drinks Alcohol"] == "Drinks Alcohol":
+        if row ["Gender"] == "Male":
+            return np.random.gamma(shape = 0.98, scale = 38.57, size = 1)
+        else:
+            return np.random.gamma(shape = 0.91, scale = 15.55, size = 1)
+
+    else:
+        return np.zeros(1)
+
+demographic_dataset["Alcohol Consumption"] = demographic_dataset.apply(alcohol_consumption, axis = 1)
+
+alc_consumption = []
+
+for value in demographic_dataset["Alcohol Consumption"].values:
+    alc_consumption.append(value.item())
+
+sns.histplot(alc_consumption)
+plt.show()
+plt.close()
+
+demographic_dataset["Alcohol Consumption"] = alc_consumption
+alc_consumers = demographic_dataset.loc[demographic_dataset["Drinks Alcohol"] == "Drinks Alcohol" ]
+sns.histplot(x = alc_consumers["Alcohol Consumption"], hue = alc_consumers["Gender"], palette= "coolwarm")
+plt.show()
+demographic_dataset.to_csv("dataset.csv")
