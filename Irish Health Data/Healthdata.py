@@ -1,3 +1,4 @@
+from os import remove
 import numpy as np
 from numpy import random
 import matplotlib.pyplot as plt
@@ -21,7 +22,7 @@ female_pop = whole_country.loc[whole_country["Sex"] == "Female"]
 percentage_females = female_pop["Population"].values/(female_pop["Population"].values + male_pop["Population"].values) * 100
 percentage_males = 100 - percentage_females
 print("Total percentage of female Irish population : {}".format(percentage_females))
-print("Total percentage of Irish male population : {}".format(percentage_males))
+print("Total percentage of Irish male population  : {}".format(percentage_males))
 
 genders = ["Male", "Female"]
 gender = np.random.choice(a = genders, size = 7500, p = [0.5044340085, 0.4955659915])
@@ -40,7 +41,7 @@ fig, ax = plt.subplots()
 sns.histplot(remove_kids, kde = True)
 ax.set_xlim(15,120)
 plt.show()
-
+plt.close()
 #Affluence data
 #For this survey - participants were divided into quintiles based on affluence/poverty level
 #Equal chance that particpant would be in any of these categories
@@ -49,3 +50,41 @@ quintiles = ["Very Disadvantaged", "Disadvantaged", "Average", "Affluent", "Very
 affluence_levels = np.random.choice(quintiles, 7500, p = [0.2, 0.2, 0.2, 0.2, 0.2])
 unique, counts = np.unique(affluence_levels, return_counts = True)
 print (np.asarray((unique, counts)).T)
+sns.barplot(x = unique, y = counts)
+plt.xticks(rotation = 45)
+plt.tight_layout()
+plt.show()
+plt.close()
+
+
+demographic_dataset = pd.DataFrame({"Gender": gender, "Age": remove_kids, "Socioeconomic Status": affluence_levels})
+demographic_dataset.to_csv("dataset.csv")
+
+#Unemployment Data
+#Taking figures from mid-2019 to reflect time that Healthy Ireland Survey was done
+
+monthly_unemployment = pd.read_csv('Monthly Unemployment Figures 06 21.csv')
+monthly_unemployment = monthly_unemployment[["Age Group", "Sex", "VALUE"]]
+print(monthly_unemployment.values)
+
+employment_choices = ["Employed", "Unemployed"]
+
+def in_employment (row):
+
+    if row ["Gender"] == "Male":
+         if row ["Age"] < 24:
+             return np.random.choice(employment_choices, p = [0.842, 0.158])
+         else:
+             return np.random.choice(employment_choices, p = [0.95, 0.05])
+    else: 
+        if row ["Age"] < 24:
+             return np.random.choice(employment_choices, p = [0.89, 0.11])
+        else:
+             return np.random.choice(employment_choices, p = [0.959, 0.041])
+
+        
+demographic_dataset["Employment Status"] = demographic_dataset.apply(in_employment, axis = 1)
+demographic_dataset.to_csv("dataset.csv")
+
+
+
