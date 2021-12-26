@@ -4,6 +4,8 @@ from numpy import random
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+from scipy import stats
+from scipy.stats import skewnorm
 
 np.random.seed(seed = 1234)
 
@@ -53,7 +55,7 @@ print (np.asarray((unique, counts)).T)
 sns.barplot(x = unique, y = counts)
 plt.xticks(rotation = 45)
 plt.tight_layout()
-plt.show()
+#plt.show()
 plt.close()
 
 
@@ -65,7 +67,6 @@ demographic_dataset.to_csv("dataset.csv")
 
 monthly_unemployment = pd.read_csv('Monthly Unemployment Figures 06 21.csv')
 monthly_unemployment = monthly_unemployment[["Age Group", "Sex", "VALUE"]]
-print(monthly_unemployment.values)
 
 employment_choices = ["Employed", "Unemployed"]
 
@@ -86,5 +87,39 @@ def in_employment (row):
 demographic_dataset["Employment Status"] = demographic_dataset.apply(in_employment, axis = 1)
 demographic_dataset.to_csv("dataset.csv")
 
+bmi_dist_young = skewnorm.rvs(a = 2, loc = 22, scale = 3, size = 7500)
+bmi_dist_adults = skewnorm.rvs(a = 3, loc = 24, scale = 5, size = 7500)
+bmi_dist_older_adults = skewnorm.rvs(a = 3, loc = 26, scale = 6, size = 7500)
 
+def bmi_assign (row):
 
+    if row["Age"] <=24 :
+        return skewnorm.rvs(a = 2, loc = 20, scale = 3, size = 1)
+    elif row["Age"] <= 74:
+        return skewnorm.rvs(a = 3, loc = 23.5, scale = 5, size = 1)
+    else: 
+        return skewnorm.rvs(a = 3, loc = 26, scale = 6, size = 1)
+
+demographic_dataset["BMI"] = demographic_dataset.apply(bmi_assign, axis = 1)
+
+bmi_values = []
+bmi_classification = []
+for value in demographic_dataset["BMI"].values:
+    bmi_values.append(value.item())
+    if value.item() < 18.5:
+        classification = "Underweight"
+    elif value.item() >= 18.5 and value.item () < 25:
+        classification = "Healthy Weight"
+    elif value.item() >= 25 and value.item () < 30:
+        classification = "Overweight"
+    else:
+        classification = "Obese"
+    bmi_classification.append(classification)
+
+demographic_dataset["BMI"] = bmi_values
+demographic_dataset["BMI Classification"] = bmi_classification
+
+demographic_dataset.to_csv("dataset.csv")
+
+sns.histplot(bmi_values)
+plt.show()
