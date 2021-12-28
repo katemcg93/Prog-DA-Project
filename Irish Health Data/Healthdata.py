@@ -2,6 +2,7 @@ from os import remove
 import numpy as np
 from numpy import random
 import matplotlib.pyplot as plt
+from scipy.stats.morestats import yeojohnson
 import seaborn as sns
 import pandas as pd
 from scipy import stats
@@ -68,6 +69,9 @@ demographic_dataset.to_csv("dataset.csv")
 monthly_unemployment = pd.read_csv('Monthly Unemployment Figures 06 21.csv')
 monthly_unemployment = monthly_unemployment[["Age Group", "Sex", "VALUE"]]
 
+age_order = ["15-24", "25-34", "35-44", "45-54", "55-64", "65-74", "75+"]
+bmi_order = ["Underweight", "Healthy Weight", "Overweight", "Obese"]
+
 age_group = []
 
 def age_categories (row) :
@@ -111,7 +115,7 @@ def in_employment (row):
 
         
 demographic_dataset["Employment Status"] = demographic_dataset.apply(in_employment, axis = 1)
-sns.countplot(x = "Employment Status", hue = "Age Category", data = demographic_dataset)
+sns.countplot(x = "Employment Status", hue = "Age Category", data = demographic_dataset, hue_order= age_order)
 plt.show()
 plt.close()
 demographic_dataset.to_csv("dataset.csv")
@@ -160,49 +164,74 @@ sns.histplot(bmi_values)
 plt.show()
 plt.close()
 
-age_categories = ["15-24", "25-34", "35-44", "45-54", "55-64", "65-74", "75+"]
-
-sns.countplot(x = "Age Category", hue = "BMI Classification", order = age_categories, data = demographic_dataset)
+sns.countplot(x = "Age Category", hue = "BMI Classification", order = age_order, hue_order=bmi_order, data = demographic_dataset)
 plt.xticks(rotation = 45)
 plt.tight_layout()
 plt.show()
 plt.close()
 
-meeting_ex_guidelines = ["Yes", "No"]
+meeting_ex_guidelines = ["Yes", "No", "No Exercise"]
 
-def enough_exercise (row):
-    if row["Gender"] == 'Male':
-        if row["Age"] <= 24:
-            return np.random.choice(meeting_ex_guidelines, p = [0.71, 0.29])
-        elif row["Age"] >= 25 and row["Age"] <= 44:
-            return np.random.choice(meeting_ex_guidelines, p = [0.63, 0.37])
-        elif row["Age"] >= 45 and row["Age"] <= 54:
-            return np.random.choice(meeting_ex_guidelines, p = [0.53, 0.47])
-        elif row["Age"] >= 55 and row["Age"] <= 64:
-            return np.random.choice(meeting_ex_guidelines, p = [0.40, 0.60])
-        elif row["Age"] >= 65 and row["Age"] <= 74:
-            return np.random.choice(meeting_ex_guidelines, p = [0.41, 0.59])
-        elif row["Age"] >= 75:
-            return np.random.choice(meeting_ex_guidelines, p = [0.20, 0.80])
 
+test_exercise = skewnorm.rvs(a = 5, loc = 170, scale = 10, size = 7500)
+sns.histplot(test_exercise)
+plt.show()
+plt.close()
+
+def mins_exercise(row):
+        if row["Gender"] == 'Male':
+            if row["Age"] <= 24:
+                return skewnorm.rvs(a = 2, loc = 150, scale = 40, size = 1)
+            elif row["Age"] > 24 and row["Age"] <= 44:
+                return skewnorm.rvs(a = 2, loc = 150, scale = 40, size = 1)
+            elif row["Age"] > 44 and row["Age"] <= 54:
+                return skewnorm.rvs(a = 0, loc = 130, scale = 40, size = 1)
+            elif row["Age"] > 54 and row["Age"] <= 64:
+                return skewnorm.rvs(a = 0, loc = 100, scale = 40, size = 1)
+            elif row["Age"] > 64 and row["Age"] <= 74:
+                return skewnorm.rvs(a = 0, loc = 100, scale = 40, size = 1)
+            elif row["Age"] > 74:
+                return skewnorm.rvs(a = -1, loc = 80, scale = 40, size = 1)
+
+        else:
+            if row["Age"] <= 24:
+                return skewnorm.rvs(a = 1, loc = 160, scale = 40, size = 1)
+            elif row["Age"] > 24 and row["Age"] <= 44:
+                return skewnorm.rvs(a = 1, loc = 140, scale = 40, size = 1)
+            elif row["Age"] > 44 and row["Age"] <= 54:
+                return skewnorm.rvs(a = 0, loc = 130, scale = 40, size = 1)
+            elif row["Age"] > 54 and row["Age"] <= 64:
+                return skewnorm.rvs(a = -1, loc = 90, scale = 40, size = 1)
+            elif row["Age"] > 64 and row["Age"] <= 74:
+                  return skewnorm.rvs(a = 0, loc = 90, scale = 40, size = 1)
+            elif row["Age"] > 74:
+                return skewnorm.rvs(a = 0, loc = 40, scale = 40, size = 1)
+
+demographic_dataset["Minutes Exercise per Week"] = demographic_dataset.apply(mins_exercise, axis = 1)
+demographic_dataset.to_csv("dataset.csv")
+
+minutes_exercise = []
+meeting_guidelines = []
+for value in demographic_dataset["Minutes Exercise per Week"].values:
+    minutes_exercise.append(value.item())
+    if value.item ()  > 150:
+        is_meeting = "Yes"
     else:
-        if row["Age"] <= 24:
-            return np.random.choice(meeting_ex_guidelines, p = [0.51, 0.49])
-        elif row["Age"] >= 25 and row["Age"] <= 44:
-            return np.random.choice(meeting_ex_guidelines, p = [0.42, 0.58])
-        elif row["Age"] >= 45 and row["Age"] <= 54:
-            return np.random.choice(meeting_ex_guidelines, p = [0.40, 0.60])
-        elif row["Age"] >= 55 and row["Age"] <= 64:
-            return np.random.choice(meeting_ex_guidelines, p = [0.30, 0.70])
-        elif row["Age"] >= 65 and row["Age"] <= 74:
-            return np.random.choice(meeting_ex_guidelines, p = [0.26, 0.74])
-        elif row["Age"] >= 75:
-            return np.random.choice(meeting_ex_guidelines, p = [0.16, 0.84])
+        is_meeting = "No"
+    meeting_guidelines.append(is_meeting)
 
-demographic_dataset["Meeting Daily Exercise Guidelines"] = demographic_dataset.apply(enough_exercise, axis = 1)
+demographic_dataset["Minutes Exercise per Week"] = minutes_exercise
+demographic_dataset["Meeting Exercise Guidelines"] = meeting_guidelines
+
 demographic_dataset.to_csv("dataset.csv")
 
 alcohol_choices = ["Drinks Alcohol", "Does Not Drink Alcohol"]
+
+sns.histplot()
+
+sns.countplot(x = "Meeting Exercise Guidelines", data = demographic_dataset, hue = "Age Category", hue_order = age_order)
+plt.show()
+plt.close()
 
 def drinks_alcohol(row):
     if row["Socioeconomic Status"] == "Very Disadvantaged":
@@ -272,6 +301,6 @@ demographic_dataset.to_csv("dataset.csv")
 plt.show()
 plt.close()
 
-sns.histplot(x = demographic_dataset["Hours Sleep"], hue = demographic_dataset["Employment Status"])
+sns.kdeplot(x = demographic_dataset["Hours Sleep"], hue = demographic_dataset["Age Category"], fill = False, palette = "coolwarm", linewidth = 3, hue_order=age_order)
 plt.show()
 plt.close()
