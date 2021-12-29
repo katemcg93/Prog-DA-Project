@@ -181,31 +181,31 @@ plt.close()
 def mins_exercise(row):
         if row["Gender"] == 'Male':
             if row["Age"] <= 24:
-                return skewnorm.rvs(a = 2, loc = 150, scale = 40, size = 1)
-            elif row["Age"] > 24 and row["Age"] <= 44:
-                return skewnorm.rvs(a = 2, loc = 150, scale = 40, size = 1)
-            elif row["Age"] > 44 and row["Age"] <= 54:
-                return skewnorm.rvs(a = 0, loc = 130, scale = 40, size = 1)
-            elif row["Age"] > 54 and row["Age"] <= 64:
-                return skewnorm.rvs(a = 0, loc = 100, scale = 40, size = 1)
-            elif row["Age"] > 64 and row["Age"] <= 74:
-                return skewnorm.rvs(a = 0, loc = 100, scale = 40, size = 1)
-            elif row["Age"] > 74:
-                return skewnorm.rvs(a = -1, loc = 80, scale = 40, size = 1)
-
-        else:
-            if row["Age"] <= 24:
-                return skewnorm.rvs(a = 1, loc = 160, scale = 40, size = 1)
+                return skewnorm.rvs(a = 1, loc = 150, scale = 40, size = 1)
             elif row["Age"] > 24 and row["Age"] <= 44:
                 return skewnorm.rvs(a = 1, loc = 140, scale = 40, size = 1)
             elif row["Age"] > 44 and row["Age"] <= 54:
                 return skewnorm.rvs(a = 0, loc = 130, scale = 40, size = 1)
             elif row["Age"] > 54 and row["Age"] <= 64:
-                return skewnorm.rvs(a = -1, loc = 90, scale = 40, size = 1)
+                return skewnorm.rvs(a = 0, loc = 120, scale = 40, size = 1)
             elif row["Age"] > 64 and row["Age"] <= 74:
-                  return skewnorm.rvs(a = 0, loc = 90, scale = 40, size = 1)
+                return skewnorm.rvs(a = -1, loc = 100, scale = 40, size = 1)
             elif row["Age"] > 74:
-                return skewnorm.rvs(a = 0, loc = 40, scale = 40, size = 1)
+                return skewnorm.rvs(a = -1, loc = 80, scale = 40, size = 1)
+
+        else:
+            if row["Age"] <= 24:
+                return skewnorm.rvs(a = 1, loc = 140, scale = 40, size = 1)
+            elif row["Age"] > 24 and row["Age"] <= 44:
+                return skewnorm.rvs(a = 1, loc = 130, scale = 40, size = 1)
+            elif row["Age"] > 44 and row["Age"] <= 54:
+                return skewnorm.rvs(a = 0, loc = 120, scale = 40, size = 1)
+            elif row["Age"] > 54 and row["Age"] <= 64:
+                return skewnorm.rvs(a = -1, loc = 100, scale = 40, size = 1)
+            elif row["Age"] > 64 and row["Age"] <= 74:
+                  return skewnorm.rvs(a = -1, loc = 90, scale = 40, size = 1)
+            elif row["Age"] > 74:
+                return skewnorm.rvs(a = -1, loc = 80, scale = 40, size = 1)
 
 demographic_dataset["Minutes Exercise per Week"] = demographic_dataset.apply(mins_exercise, axis = 1)
 demographic_dataset.to_csv("dataset.csv")
@@ -304,3 +304,102 @@ plt.close()
 sns.kdeplot(x = demographic_dataset["Hours Sleep"], hue = demographic_dataset["Age Category"], fill = False, palette = "coolwarm", linewidth = 3, hue_order=age_order)
 plt.show()
 plt.close()
+
+smoking_choices = ["Current Smoker", "Ex Smoker", "Never Smoked"]
+
+def smoking_status(row):
+        if row["Age"] >= 24:
+            if row["Socioeconomic Status"] == "Very Disadvantaged":
+                return np.random.choice(smoking_choices, p = [0.4,0.1,0.5])
+            if row["Socioeconomic Status"] == "Disadvantaged":
+                return np.random.choice(smoking_choices, p = [0.3,0.1,0.6])
+            if row["Socioeconomic Status"] == "Average":
+                return np.random.choice(smoking_choices, p = [0.3,0.1,0.6])
+            if row["Socioeconomic Status"] == "Affluent":
+                return np.random.choice(smoking_choices, p = [0.2,0.1,0.7])
+            if row["Socioeconomic Status"] == "Very Affluent":
+                return np.random.choice(smoking_choices, p = [0.15,0.05,0.8])
+
+        elif row["Age"] > 24 and row["Age"] <= 35:
+            if row["Socioeconomic Status"] == "Very Disadvantaged":
+                return np.random.choice(smoking_choices, p = [0.6,0.2,0.2])
+            if row["Socioeconomic Status"] == "Disadvantaged":
+                return np.random.choice(smoking_choices, p = [0.5,0.2,0.4])
+            if row["Socioeconomic Status"] == "Average":
+                return np.random.choice(smoking_choices, p = [0.45,0.05,0.5])
+            if row["Socioeconomic Status"] == "Affluent":
+                return np.random.choice(smoking_choices, p = [0.4,0.1,0.5])
+            if row["Socioeconomic Status"] == "Very Affluent":
+                return np.random.choice(smoking_choices, p = [0.4,0.1,0.5])
+
+        elif row["Age"] > 34 and row["Age"] <= 45:
+                if row["Socioeconomic Status"] == "Very Disadvantaged":
+                    return np.random.choice(smoking_choices, p = [0.3,0.4,0.3])
+                if row["Socioeconomic Status"] == "Disadvantaged":
+                    return np.random.choice(smoking_choices, p = [0.3,0.4,0.3])
+                if row["Socioeconomic Status"] == "Average":
+                    return np.random.choice(smoking_choices, p = [0.2,0.05,0.3])
+                if row["Socioeconomic Status"] == "Affluent":
+                    return np.random.choice(smoking_choices, p = [0.1,0.6,0.3])
+                if row["Socioeconomic Status"] == "Very Affluent":
+                    return np.random.choice(smoking_choices, p = [0.1,0.5,0.4])
+        
+        elif row["Age"] > 44 and row["Age"] <= 55:
+                if row["Socioeconomic Status"] == "Very Disadvantaged":
+                    return np.random.choice(smoking_choices, p = [0.2,0.6,0.1])
+                if row["Socioeconomic Status"] == "Disadvantaged":
+                    return np.random.choice(smoking_choices, p = [0.3,0.5,0.1])
+                if row["Socioeconomic Status"] == "Average":
+                    return np.random.choice(smoking_choices, p = [0.2,0.05,0.3])
+                if row["Socioeconomic Status"] == "Affluent":
+                    return np.random.choice(smoking_choices, p = [0.1,0.6,0.3])
+                if row["Socioeconomic Status"] == "Very Affluent":
+                    return np.random.choice(smoking_choices, p = [0.1,0.6,0.3])
+        
+        elif row["Age"] > 54 and row["Age"] <= 65:
+                    if row["Socioeconomic Status"] == "Very Disadvantaged":
+                        return np.random.choice(smoking_choices, p = [0.2,0.3,0.3])
+                    if row["Socioeconomic Status"] == "Disadvantaged":
+                        return np.random.choice(smoking_choices, p = [0.2,0.3,0.3])
+                    if row["Socioeconomic Status"] == "Average":
+                        return np.random.choice(smoking_choices, p = [0.1,0.5,0.4])
+                    if row["Socioeconomic Status"] == "Affluent":
+                        return np.random.choice(smoking_choices, p = [0.05,0.55,0.4])
+                    if row["Socioeconomic Status"] == "Very Affluent":
+                        return np.random.choice(smoking_choices, p = [0.05,0.35,0.6])
+            
+        elif row["Age"] > 54 and row["Age"] <= 65:
+                    if row["Socioeconomic Status"] == "Very Disadvantaged":
+                        return np.random.choice(smoking_choices, p = [0.1,0.6,0.3])
+                    if row["Socioeconomic Status"] == "Disadvantaged":
+                        return np.random.choice(smoking_choices, p = [0.1,0.7,0.2])
+                    if row["Socioeconomic Status"] == "Average":
+                        return np.random.choice(smoking_choices, p = [0.1,0.6,0.3])
+                    if row["Socioeconomic Status"] == "Affluent":
+                        return np.random.choice(smoking_choices, p = [0.05,0.55,0.3])
+                    if row["Socioeconomic Status"] == "Very Affluent":
+                        return np.random.choice(smoking_choices, p = [0.05,0.4,0.55])
+            
+        else:
+                    if row["Socioeconomic Status"] == "Very Disadvantaged":
+                        return np.random.choice(smoking_choices, p = [0.05,0.85,0.1])
+                    if row["Socioeconomic Status"] == "Disadvantaged":
+                        return np.random.choice(smoking_choices, p = [0.05,0.85,0.1])
+                    if row["Socioeconomic Status"] == "Average":
+                        return np.random.choice(smoking_choices, p = [0.05,0.65,0.3])
+                    if row["Socioeconomic Status"] == "Affluent":
+                        return np.random.choice(smoking_choices, p = [0.05,0.55,0.4])
+                    if row["Socioeconomic Status"] == "Very Affluent":
+                        return np.random.choice(smoking_choices, p = [0.05,0.4,0.55])
+
+
+demographic_dataset["Smoking Status"] = demographic_dataset.apply(smoking_status, axis = 1)
+sns.countplot(x = "Smoking Status", data = demographic_dataset, hue = "Socioeconomic Status", hue_order=quintiles)
+plt.show()
+plt.close()
+            
+        
+
+
+
+
