@@ -32,8 +32,9 @@ print("Total percentage of Irish male population  : {}".format(percentage_males)
 genders = ["Male", "Female"]
 gender = np.random.choice(a = genders, size = 7500, p = [0.5044340085, 0.4955659915])
 unique, counts = np.unique(gender, return_counts = True)
-print (np.asarray((unique, counts)).T)
-
+sns.barplot(x = unique, y = counts, palette="PiYG")
+plt.show()
+plt.close()
 # Age Data
 # Mean age of Irish population is 37.48
 # Plugged this into random normal distribution with estimated SD
