@@ -8,6 +8,7 @@ import pandas as pd
 from scipy import stats
 from scipy.stats import skewnorm
 from scipy.stats import gamma
+from scipy.stats import expon
 
 np.random.seed(seed = 1234)
 
@@ -181,9 +182,15 @@ plt.close()
 def mins_exercise(row):
         if row["Gender"] == 'Male':
             if row["Age"] <= 24:
-                return skewnorm.rvs(a = 1, loc = 150, scale = 40, size = 1)
+                if row["BMI Classification"] == "Obese":
+                     return skewnorm.rvs(a = 0, loc = 120, scale = 40, size = 1)
+                else:
+                    return skewnorm.rvs(a = 1, loc = 150, scale = 40, size = 1)
             elif row["Age"] > 24 and row["Age"] <= 44:
-                return skewnorm.rvs(a = 1, loc = 140, scale = 40, size = 1)
+                if row["BMI Classification"] == "Obese":
+                    return skewnorm.rvs(a = 0, loc = 110, scale = 40, size = 1)
+                else:
+                    return skewnorm.rvs(a = 1, loc = 140, scale = 40, size = 1)
             elif row["Age"] > 44 and row["Age"] <= 54:
                 return skewnorm.rvs(a = 0, loc = 130, scale = 40, size = 1)
             elif row["Age"] > 54 and row["Age"] <= 64:
@@ -195,9 +202,15 @@ def mins_exercise(row):
 
         else:
             if row["Age"] <= 24:
-                return skewnorm.rvs(a = 1, loc = 140, scale = 40, size = 1)
+                    if row["BMI Classification"] == "Obese":
+                     return skewnorm.rvs(a = 0, loc = 120, scale = 40, size = 1)
+                    else:
+                     return skewnorm.rvs(a = 1, loc = 140, scale = 40, size = 1)
             elif row["Age"] > 24 and row["Age"] <= 44:
-                return skewnorm.rvs(a = 1, loc = 130, scale = 40, size = 1)
+                    if row["BMI Classification"] == "Obese":
+                     return skewnorm.rvs(a = 0, loc = 100, scale = 40, size = 1)
+                    else:
+                     return skewnorm.rvs(a = 1, loc = 130, scale = 40, size = 1)
             elif row["Age"] > 44 and row["Age"] <= 54:
                 return skewnorm.rvs(a = 0, loc = 120, scale = 40, size = 1)
             elif row["Age"] > 54 and row["Age"] <= 64:
@@ -392,11 +405,37 @@ def smoking_status(row):
                     if row["Socioeconomic Status"] == "Very Affluent":
                         return np.random.choice(smoking_choices, p = [0.05,0.4,0.55])
 
+daily_smoke = expon.rvs(size = 7500, loc = 10, scale = 5)
+sns.histplot(daily_smoke)
+plt.show()
+plt.close()
 
 demographic_dataset["Smoking Status"] = demographic_dataset.apply(smoking_status, axis = 1)
 sns.countplot(x = "Smoking Status", data = demographic_dataset, hue = "Socioeconomic Status", hue_order=quintiles)
 plt.show()
 plt.close()
+
+def cigs_per_day(row):
+    if row["Smoking Status"] == "Current Smoker":
+        return expon.rvs(size = 1, loc  = 5, scale = 20)
+    else:
+        return np.zeros(1)
+
+demographic_dataset["Cigarettes Per Day"] = demographic_dataset.apply(cigs_per_day, axis = 1)
+
+daily_cigs = []
+
+for value in demographic_dataset["Cigarettes Per Day"].values:
+    daily_cigs.append(value.item())
+demographic_dataset["Cigarettes Per Day"] = daily_cigs
+
+smokers_only =  demographic_dataset.loc[demographic_dataset["Smoking Status"] == "Current Smoker" ]
+
+sns.histplot(smokers_only["Cigarettes Per Day"])
+plt.show()
+plt.close()
+demographic_dataset.to_csv("dataset.csv")
+
             
         
 
