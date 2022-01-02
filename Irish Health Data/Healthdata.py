@@ -9,6 +9,7 @@ from scipy import stats
 from scipy.stats import skewnorm
 from scipy.stats import gamma
 from scipy.stats import expon
+from scipy.stats import truncnorm
 
 np.random.seed(seed = 1234)
 
@@ -17,6 +18,8 @@ np.random.seed(seed = 1234)
 #Demographic data gathered includes age, gender, employment status and education level
 
 #Gender
+
+age_dist = truncnorm.rvs(a = 15, b = 100, loc = 37.4, scale = 20, size = 7500)
 
 total_pop = pd.read_csv('Population by Gender 2016.csv')
 print(total_pop.columns)
@@ -32,9 +35,8 @@ print("Total percentage of Irish male population  : {}".format(percentage_males)
 genders = ["Male", "Female"]
 gender = np.random.choice(a = genders, size = 7500, p = [0.5044340085, 0.4955659915])
 unique, counts = np.unique(gender, return_counts = True)
-sns.barplot(x = unique, y = counts, palette="PiYG")
-plt.show()
-plt.close()
+print (np.asarray((unique, counts)).T)
+
 # Age Data
 # Mean age of Irish population is 37.48
 # Plugged this into random normal distribution with estimated SD
@@ -48,6 +50,7 @@ sns.histplot(remove_kids, kde = True)
 ax.set_xlim(15,120)
 plt.show()
 plt.close()
+
 #Affluence data
 #For this survey - participants were divided into quintiles based on affluence/poverty level
 #Equal chance that particpant would be in any of these categories
@@ -100,20 +103,49 @@ demographic_dataset["Age Category"] = demographic_dataset.apply(age_categories, 
 demographic_dataset.to_csv("dataset.csv")
 
 
-employment_choices = ["Employed", "Unemployed"]
+employment_choices = ["Employed", "Unemployed", "Not in Labour Force"]
 
 def in_employment (row):
-
-    if row ["Gender"] == "Male":
-         if row ["Age"] < 24:
-             return np.random.choice(employment_choices, p = [0.842, 0.158])
-         else:
-             return np.random.choice(employment_choices, p = [0.95, 0.05])
-    else: 
-        if row ["Age"] < 24:
-             return np.random.choice(employment_choices, p = [0.89, 0.11])
+    if row["Gender"] == "Male":
+        if row["Age"] <20:
+            return np.random.choice(a = employment_choices, p =[0.33, 0.12, 0.55])
+        elif row["Age"] >= 20 and row["Age"] < 25:
+            return np.random.choice(a = employment_choices, p =[0.68, 0.12, 0.20])
+        elif row["Age"] >= 25  and row["Age"] < 35:
+            return np.random.choice(a = employment_choices, p =[0.84, 0.07, 0.08])
+        elif row["Age"] >= 35  and row["Age"] < 45:
+            return np.random.choice(a = employment_choices, p =[0.9, 0.03, 0.07])
+        elif row["Age"] >= 45  and row["Age"] < 55:
+            return np.random.choice(a = employment_choices, p =[0.85, 0.04, 0.11])
+        elif row["Age"] >= 55  and row["Age"] < 59:
+            return np.random.choice(a = employment_choices, p =[0.79, 0.04, 0.17])
+        elif row["Age"] >= 59  and row["Age"] < 64:
+            return np.random.choice(a = employment_choices, p =[0.58, 0.04, 0.38])
+        elif row["Age"] >= 59  and row["Age"] < 64:
+            return np.random.choice(a = employment_choices, p =[0.2, 0.01, 0.89])
         else:
-             return np.random.choice(employment_choices, p = [0.959, 0.041])
+            return np.random.choice(a = employment_choices, p =[0, 0.06, 0.94])
+    else:
+        if row["Age"] <20:
+            return np.random.choice(a = employment_choices, p =[0.33, 0.16, 0.61])
+        elif row["Age"] >= 20 and row["Age"] < 25:
+            return np.random.choice(a = employment_choices, p =[0.68, 0.09, 0.25])
+        elif row["Age"] >= 25  and row["Age"] < 35:
+            return np.random.choice(a = employment_choices, p =[0.77, 0.05, 0.18])
+        elif row["Age"] >= 35  and row["Age"] < 45:
+            return np.random.choice(a = employment_choices, p =[0.77, 0.05, 0.18])
+        elif row["Age"] >= 45  and row["Age"] < 55:
+            return np.random.choice(a = employment_choices, p =[0.74, 0.04, 0.12])
+        elif row["Age"] >= 55  and row["Age"] < 59:
+            return np.random.choice(a = employment_choices, p =[0.67, 0.04, 0.29])
+        elif row["Age"] >= 59  and row["Age"] < 64:
+            return np.random.choice(a = employment_choices, p =[0.46, 0.05, 0.49])
+        elif row["Age"] >= 59  and row["Age"] < 64:
+            return np.random.choice(a = employment_choices, p =[0.2, 0.01, 0.89])
+        else:
+            return np.random.choice(a = employment_choices, p =[0, 0.06, 0.94])
+
+
 
         
 demographic_dataset["Employment Status"] = demographic_dataset.apply(in_employment, axis = 1)
