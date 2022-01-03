@@ -139,7 +139,7 @@ def in_employment (row):
         elif row["Age"] >= 55  and row["Age"] < 59:
             return np.random.choice(a = employment_choices, p =[0.67, 0.04, 0.29])
         elif row["Age"] >= 59  and row["Age"] < 64:
-            return np.random.choice(a = employment_choices, p =[0.46, 0.05, 0.49])
+            return np.random.choice(a = employment_choices, p =[0.58, 0.04, 0.38])
         elif row["Age"] >= 59  and row["Age"] < 64:
             return np.random.choice(a = employment_choices, p =[0.2, 0.01, 0.89])
         else:
@@ -157,21 +157,24 @@ demographic_dataset.to_csv("dataset.csv")
 
 
 def bmi_assign (row):
-
-    if row["Age"] <= 24:
-        return skewnorm.rvs(a = 2, loc = 20, scale = 5, size = 1)
-    elif row["Age"] > 24 and row["Age"] <= 34:
-        return skewnorm.rvs(a = 2, loc = 23, scale = 3, size = 1)
-    elif row["Age"] > 34 and row["Age"] <= 44:
-        return skewnorm.rvs(a = 2, loc = 23, scale = 5, size = 1)
-    elif row["Age"] > 44 and row["Age"] <= 54:
-        return skewnorm.rvs(a = 2, loc = 25, scale = 5, size = 1)
-    elif row["Age"] > 54 and row["Age"] <= 64:
-        return skewnorm.rvs(a = 3, loc = 26, scale = 5, size = 1)
-    elif row["Age"] > 64 and row["Age"] <= 74:
-        return skewnorm.rvs(a = 3, loc = 27, scale = 5, size = 1)
-    else:
-        return skewnorm.rvs(a = 4, loc = 27, scale = 5, size = 1)
+    if row ["Gender"] == "Male":
+        if row["Age"] <= 24:
+            if row["Socioeconomic Status"].isin ("Disadvantaged, Very Disadvantaged"):
+                return skewnorm.rvs(a = 2, loc = 25, scale = 5, size = 1)
+            else:
+                return skewnorm.rvs(a = 2, loc = 20, scale = 5, size = 1)
+        elif row["Age"] > 24 and row["Age"] <= 34:
+            return skewnorm.rvs(a = 2, loc = 23, scale = 3, size = 1)
+        elif row["Age"] > 34 and row["Age"] <= 44:
+            return skewnorm.rvs(a = 2, loc = 23, scale = 5, size = 1)
+        elif row["Age"] > 44 and row["Age"] <= 54:
+            return skewnorm.rvs(a = 2, loc = 25, scale = 5, size = 1)
+        elif row["Age"] > 54 and row["Age"] <= 64:
+            return skewnorm.rvs(a = 3, loc = 26, scale = 5, size = 1)
+        elif row["Age"] > 64 and row["Age"] <= 74:
+            return skewnorm.rvs(a = 3, loc = 27, scale = 5, size = 1)
+        else:
+            return skewnorm.rvs(a = 4, loc = 27, scale = 5, size = 1)
 
 demographic_dataset["BMI"] = demographic_dataset.apply(bmi_assign, axis = 1)
 
