@@ -325,15 +325,27 @@ plt.close()
 
 def hours_sleep(row):
     if row["Age"] < 24:
-        if row ["Employment Status"] == "Employed":
-            return np.random.normal(7.4, 1, size = 1)
+        if row["BMI"] > 25:
+            if row ["Employment Status"] == "Employed":
+                return skewnorm.rvs(a = 2, loc = 6.5, scale = 3, size = 1)
+            else:
+               return skewnorm.rvs(a = 2, loc = 7.2, scale = 3, size = 1)
         else:
-            return np.random.normal(7.9, 1, size = 1)
+            if row ["Employment Status"] == "Employed":
+                return skewnorm.rvs(a = 2, loc = 7.1, scale = 3, size = 1)
+            else:
+                return skewnorm.rvs(a = 2, loc = 7.9, scale = 3, size = 1)
     else:
-        if row["Employment Status"] == "Employed":
-            return np.random.normal(7.1, 1, size = 1)
-        else:   
-            return np.random.normal(7.5, 1, size = 1)
+        if row["BMI"] > 25:
+            if row["Employment Status"] == "Employed":
+                return np.random.normal(6, 1, size = 1)
+            else:   
+                return np.random.normal(6.8, 1, size = 1)
+        else:
+            if row["Employment Status"] == "Employed":
+                return np.random.normal(7.1, 1, size = 1)
+            else:   
+                return np.random.normal(7.5, 1, size = 1)
 
 demographic_dataset["Hours Sleep"] = demographic_dataset.apply(hours_sleep, axis = 1)
 
